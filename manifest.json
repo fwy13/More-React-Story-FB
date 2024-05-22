@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "More React Story FB",
     "version": "0.1.1",
-    "description": "Add more emoji for story facebook.",
+    "description": "Add more react for story facebook.",
     "icons": {},
     "content_scripts": [
         {

@@ -1,9 +1,15 @@
+let browsers;
+
+if (isChrome()) browsers = chrome;
+else if (isFirefox()) browsers = browser;
+
+
 (async () => {
     if (document.getElementsByClassName("button-react").length > 0) {
         return;
     } else {
         try {
-            const url = await chrome.runtime.getURL("/DB/Emojis.json");
+            const url = await browsers.runtime.getURL("/DB/Emojis.json");
             const emojiJson = await fetch(url);
             const EMOJI_LIST = await emojiJson.json();
             const Style = document.createElement("style");
@@ -103,7 +109,6 @@ function loadEmoji(Emojis) {
     const fb_dtsg = getFbdtsg();
     const user_id = getUserId();
     const EmojisName = ["Food And Drink", "Activity"];
-    const RecentEmoji = [];
     const setTimeCheckStoryController = setInterval(() => {
         const ButtonEmojiMore = document.createElement("div");
         ButtonEmojiMore.setAttribute("class", "button-react");
@@ -138,24 +143,9 @@ function loadEmoji(Emojis) {
                 Emoji.setAttribute("class", "liEmoji");
                 Emoji.textContent = i.value;
                 Emoji.onclick = async function () {
-                    if (RecentEmoji.length > 0) {
-                        RecentEmoji.forEach((emoji) => {
-                            console.log({emoji}, i.value)
-                            if (i.value === emoji) {
-                                return;
-                            } else {
-                                RecentEmoji.push(i.value);
-                                return;
-                            }
-                        });
-                    } else {
-                        RecentEmoji.push(i.value);
-                    }
                     const storyId = getStoryId();
                     try {
                         await reactingStory(user_id, fb_dtsg, storyId, i.value);
-                        localStorage.setItem("recent-emoji", RecentEmoji);
-                        console.log(localStorage.getItem("recent-emoji"));
                     } catch (e) {
                         console.error(e);
                     }
@@ -231,7 +221,6 @@ function reactingStory(user_id, fb_dtsg, story_id, message) {
         body.append("variables", JSON.stringify(variables));
         body.append("server_timestamps", true);
         body.append("doc_id", "3769885849805751");
-
         try {
             const response = await fetch(
                 "https://www.facebook.com/api/graphql/",
@@ -250,4 +239,16 @@ function reactingStory(user_id, fb_dtsg, story_id, message) {
             reject(error);
         }
     });
+}
+
+function isChrome() {
+    return (
+        typeof chrome !== "undefined" && typeof chrome.runtime !== "undefined"
+    );
+}
+
+function isFirefox() {
+    return (
+        typeof browser !== "undefined" && typeof browser.runtime !== "undefined"
+    );
 }
